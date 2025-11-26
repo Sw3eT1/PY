@@ -2,7 +2,6 @@ import argparse
 import configparser
 import logging
 import sys
-import os
 
 from animals_classes import Sheep, Wolf
 from loggers_classes import SimulationLogger, JasonLogger, CSVLogger
