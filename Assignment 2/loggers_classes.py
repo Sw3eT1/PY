@@ -6,44 +6,40 @@ import logging
 class SimulationLogger:
     def __init__(self):
         self.round_number = 0
-        self.last_eaten_sheep = None
-        self.currently_chased_sheep = None
+        self.last_eaten_sheep_seq = None
+        self.currently_chased_sheep_id = None
 
     def start_new_round(self):
         self.round_number += 1
-        self.last_eaten_sheep = None
-        self.currently_chased_sheep = None
+        self.last_eaten_sheep_seq = None
+        self.currently_chased_sheep_id = None
 
     def log_wolf_chasing(self, sheep):
-        self.currently_chased_sheep = sheep.id if sheep else None
+        self.currently_chased_sheep_id = sheep.id if sheep else None
 
-    def log_sheep_eaten(self, sheep):
-        self.last_eaten_sheep = sheep.id if sheep else None
+    def log_sheep_eaten(self, sheep_seq_num):
+        self.last_eaten_sheep_seq = sheep_seq_num
 
     def print_round_summary(self, wolf, sheep_list):
-        print("\n===================================")
         print(f"Round: {self.round_number}")
         print(f"Wolf position: ({wolf.coordinates[0]:.3f}, {wolf.coordinates[1]:.3f})")
         print(f"Alive sheep: {len(sheep_list)}")
 
-        if self.last_eaten_sheep is not None:
-            print(f"Wolf ate sheep ID: {self.last_eaten_sheep}")
-        elif self.currently_chased_sheep is not None:
+        if self.last_eaten_sheep_seq is not None:
+            print(f"Wolf ate sheep sequence number: {self.last_eaten_sheep_seq}")
+        elif self.currently_chased_sheep_id is not None:
             chased_seq = "Unknown"
             for idx, s in enumerate(sheep_list):
-                if s.id == self.currently_chased_sheep:
+                if s.id == self.currently_chased_sheep_id:
                     chased_seq = idx + 1
                     break
             print(f"Wolf is chasing sheep sequence number: {chased_seq}")
+        print("")
 
 class JasonLogger:
-    def __init__(self, filename="logs/pos.json"):
+    def __init__(self, filename="pos.json"):
         self.filename = filename
         self.data = []
-
-        directory = os.path.dirname(self.filename)
-        if directory and not os.path.exists(directory):
-            os.makedirs(directory)
 
         if os.path.exists(self.filename):
             os.remove(self.filename)
@@ -72,13 +68,9 @@ class JasonLogger:
         logging.debug("Information saved to pos.json file")
 
 class CSVLogger:
-    def __init__(self, filename="logs/alive.csv"):
+    def __init__(self, filename="alive.csv"):
         self.filename = filename
         self.data = []
-
-        directory = os.path.dirname(self.filename)
-        if directory and not os.path.exists(directory):
-            os.makedirs(directory)
 
         if os.path.exists(self.filename):
             os.remove(self.filename)

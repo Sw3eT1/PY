@@ -97,7 +97,7 @@ class Wolf(Animal):
             logging.info(f"Sheep was eaten. Sequence number: {seq_num}")
 
             if self.logger:
-                self.logger.log_sheep_eaten(target)
+                self.logger.log_sheep_eaten(seq_num)
 
             self.current_pray_to_chase = None
             return

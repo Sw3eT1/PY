@@ -42,11 +42,8 @@ def setup_logging(level_str):
     if not isinstance(numeric_level, int):
         raise ValueError(f'Invalid log level: {level_str}')
 
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
-
     logging.basicConfig(
-        filename='logs/chase.log',
+        filename='chase.log',
         filemode='w',
         level=numeric_level,
         format='%(levelname)s: %(message)s'
