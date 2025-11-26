@@ -37,9 +37,13 @@ class SimulationLogger:
             print(f"Wolf is chasing sheep sequence number: {chased_seq}")
 
 class JasonLogger:
-    def __init__(self, filename="pos.json"):
+    def __init__(self, filename="log/pos.json"):
         self.filename = filename
         self.data = []
+
+        directory = os.path.dirname(self.filename)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
 
         if os.path.exists(self.filename):
             os.remove(self.filename)
@@ -68,9 +72,13 @@ class JasonLogger:
         logging.debug("Information saved to pos.json file")
 
 class CSVLogger:
-    def __init__(self, filename="alive.csv"):
+    def __init__(self, filename="log/alive.csv"):
         self.filename = filename
         self.data = []
+
+        directory = os.path.dirname(self.filename)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
 
         if os.path.exists(self.filename):
             os.remove(self.filename)
