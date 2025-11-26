@@ -37,7 +37,7 @@ class SimulationLogger:
             print(f"Wolf is chasing sheep sequence number: {chased_seq}")
 
 class JasonLogger:
-    def __init__(self, filename="log/pos.json"):
+    def __init__(self, filename="logs/pos.json"):
         self.filename = filename
         self.data = []
 
@@ -72,7 +72,7 @@ class JasonLogger:
         logging.debug("Information saved to pos.json file")
 
 class CSVLogger:
-    def __init__(self, filename="log/alive.csv"):
+    def __init__(self, filename="logs/alive.csv"):
         self.filename = filename
         self.data = []
 

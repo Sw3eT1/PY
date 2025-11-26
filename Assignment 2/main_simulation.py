@@ -42,13 +42,11 @@ def setup_logging(level_str):
     if not isinstance(numeric_level, int):
         raise ValueError(f'Invalid log level: {level_str}')
 
-    # Tworzenie folderu log, jeśli nie istnieje
-    if not os.path.exists('log'):
-        os.makedirs('log')
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
 
-    # Zapis do log/chase.log
     logging.basicConfig(
-        filename='log/chase.log',
+        filename='logs/chase.log',
         filemode='w',
         level=numeric_level,
         format='%(levelname)s: %(message)s'
@@ -77,7 +75,6 @@ def main():
 
     if args.log:
         setup_logging(args.log)
-
 
     if rounds > 1000:
         logging.warning(f"High number of rounds selected ({rounds}). Simulation might take a long time.")
