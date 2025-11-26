@@ -1,7 +1,7 @@
 import json
 import os
 import csv
-
+import logging
 
 class SimulationLogger:
     def __init__(self):
@@ -12,6 +12,7 @@ class SimulationLogger:
     def start_new_round(self):
         self.round_number += 1
         self.last_eaten_sheep = None
+        self.currently_chased_sheep = None
 
     def log_wolf_chasing(self, sheep):
         self.currently_chased_sheep = sheep.id if sheep else None
@@ -28,10 +29,15 @@ class SimulationLogger:
         if self.last_eaten_sheep is not None:
             print(f"Wolf ate sheep ID: {self.last_eaten_sheep}")
         elif self.currently_chased_sheep is not None:
-            print(f"Wolf is chasing sheep ID: {self.currently_chased_sheep}")
+            chased_seq = "Unknown"
+            for idx, s in enumerate(sheep_list):
+                if s.id == self.currently_chased_sheep:
+                    chased_seq = idx + 1
+                    break
+            print(f"Wolf is chasing sheep sequence number: {chased_seq}")
 
 class JasonLogger:
-    def __init__(self, filename="logs/pos.json"):
+    def __init__(self, filename="pos.json"):
         self.filename = filename
         self.data = []
 
@@ -59,9 +65,10 @@ class JasonLogger:
     def save(self):
         with open(self.filename, "w") as file:
             json.dump(self.data, file, indent=4)
+        logging.debug("Information saved to pos.json file")
 
 class CSVLogger:
-    def __init__(self, filename="logs/alive.csv"):
+    def __init__(self, filename="alive.csv"):
         self.filename = filename
         self.data = []
 
@@ -77,4 +84,4 @@ class CSVLogger:
             writer = csv.writer(file)
             writer.writerow(["round_no", "alive_sheep"])
             writer.writerows(self.data)
-
+        logging.debug("Information saved to alive.csv file")
