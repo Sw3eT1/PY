@@ -75,9 +75,10 @@ class Wolf(Animal):
             self.current_pray_to_chase = None
             return
 
-        if self.current_pray_to_chase is None or self.current_pray_to_chase not in all_sheep:
-            self.find_closest_sheep(all_sheep)
-            if self.current_pray_to_chase is None: return
+        self.find_closest_sheep(all_sheep)
+
+        if self.current_pray_to_chase is None:
+            return
 
         target = self.current_pray_to_chase
         distance = math.dist(self.coordinates, target.coordinates)
