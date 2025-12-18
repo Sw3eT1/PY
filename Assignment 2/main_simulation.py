@@ -129,7 +129,8 @@ def main():
         logging.info(f"Start new round: {current_round}")
 
         for sheep in list(all_alive_sheep):
-            sheep.move()
+            if sheep is not None:
+                sheep.move()
 
         logging.info("All alive sheep moved")
 

@@ -49,14 +49,16 @@ class Wolf(Animal):
         self.logger = logger
 
     def find_closest_sheep(self, all_sheep):
-        if not all_sheep:
+        alive_sheep = [s for s in all_sheep if s is not None]
+
+        if not alive_sheep:
             self.current_pray_to_chase = None
             return
 
-        closest_sheep = all_sheep[0]
+        closest_sheep = alive_sheep[0]
         closest_distance = math.dist(self.coordinates, closest_sheep.coordinates)
 
-        for sheep in all_sheep[1:]:
+        for sheep in alive_sheep[1:]:
             distance = math.dist(self.coordinates, sheep.coordinates)
             if distance < closest_distance:
                 closest_sheep = sheep
@@ -94,7 +96,8 @@ class Wolf(Animal):
             except ValueError:
                 seq_num = "?"
 
-            all_sheep.remove(target)
+            idx = all_sheep.index(target)
+            all_sheep[idx] = None
             logging.info(f"Sheep was eaten. Sequence number: {seq_num}")
 
             if self.logger:

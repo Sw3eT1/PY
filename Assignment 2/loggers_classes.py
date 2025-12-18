@@ -23,14 +23,15 @@ class SimulationLogger:
     def print_round_summary(self, wolf, sheep_list):
         print(f"Round: {self.round_number}")
         print(f"Wolf position: ({wolf.coordinates[0]:.3f}, {wolf.coordinates[1]:.3f})")
-        print(f"Alive sheep: {len(sheep_list)}")
+        alive_count = sum(1 for sheep in sheep_list if sheep is not None)
+        print(f"Alive sheep: {alive_count}")
 
         if self.last_eaten_sheep_seq is not None:
             print(f"Wolf ate sheep sequence number: {self.last_eaten_sheep_seq}")
         elif self.currently_chased_sheep_id is not None:
             chased_seq = "Unknown"
             for idx, s in enumerate(sheep_list):
-                if s.id == self.currently_chased_sheep_id:
+                if s is not None and s.id == self.currently_chased_sheep_id:
                     chased_seq = idx + 1
                     break
             print(f"Wolf is chasing sheep sequence number: {chased_seq}")
