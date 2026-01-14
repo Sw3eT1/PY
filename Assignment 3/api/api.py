@@ -1,81 +1,67 @@
 from flask import Blueprint, request, jsonify
-from database import SessionLocal
-from models import DataPoint
+import services
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api_bp.route("/data", methods=["GET"])
 def get_all_data():
-    session = SessionLocal()
-    try:
-        items = session.query(DataPoint).all()
+    items = services.get_all_data_points()
 
-        result = [
-            {
-                "id": item.id,
-                "feature1": item.feature1,
-                "feature2": item.feature2,
-                "category": item.category
-            }
-            for item in items
-        ]
-
-    finally:
-        session.close()
-
+    result = [
+        {
+            "id": i.id,
+            "feature1": i.feature1,
+            "feature2": i.feature2,
+            "category": i.category
+        }
+        for i in items
+    ]
     return jsonify(result), 200
 
 
 @api_bp.route("/data", methods=["POST"])
 def add_data():
-    data = request.get_json()
+    data = request.json
 
     if not data:
         return jsonify({"error": "Missing JSON"}), 400
 
-    feature1 = data.get("feature1")
-    feature2 = data.get("feature2")
-    category = data.get("category")
-
     try:
-        feature1 = float(feature1)
-        feature2 = float(feature2)
-        category = int(category)
+        f1 = float(data.get("feature1"))
+        f2 = float(data.get("feature2"))
+        cat = int(data.get("category"))
+
+        new_id = services.add_data_point(f1, f2, cat)
+
+        return jsonify({"id": new_id}), 201
+
     except (ValueError, TypeError):
         return jsonify({"error": "Invalid data"}), 400
-
-    session = SessionLocal()
-    try:
-        new_point = DataPoint(
-            feature1=feature1,
-            feature2=feature2,
-            category=category
-        )
-        session.add(new_point)
-        session.commit()
-
-        new_id = new_point.id
-
-    finally:
-        session.close()
-
-    return jsonify({"id": new_id}), 201
 
 
 @api_bp.route("/data/<int:record_id>", methods=["DELETE"])
 def delete_data(record_id):
-    session = SessionLocal()
-    try:
-        item = session.get(DataPoint, record_id)
-
-        if item is None:
-            return jsonify({"error": "Record not found"}), 404
-
-        session.delete(item)
-        session.commit()
-
-    finally:
-        session.close()
-
+    success = services.delete_data_point(record_id)
+    if not success:
+        return jsonify({"error": "Record not found"}), 404
     return jsonify({"id": record_id}), 200
+
+
+@api_bp.route("/predictions", methods=["GET"])
+def get_prediction():
+    f1_str = request.args.get("feature1")
+    f2_str = request.args.get("feature2")
+
+    try:
+        if f1_str is None or f2_str is None:
+            return jsonify({"error": "Missing parameters"}), 400
+
+        f1 = float(f1_str)
+        f2 = float(f2_str)
+
+        category = services.predict_category(f1, f2)
+        return jsonify({"category": category}), 200
+
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid data or not enough data to train"}), 400

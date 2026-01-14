@@ -1,19 +1,20 @@
-import os
-from dotenv import load_dotenv
-
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session
+import os
 
-load_dotenv()
+if os.getenv("DATABASE_URL"):
+    SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'data.db')}"
 
-USERNAME = os.getenv("USER")
-PASSWORD = os.getenv("PASSWORD")
-HOST = os.getenv("HOST")
-DB_NAME = os.getenv("DB")
+connect_args = {}
+if "sqlite" in SQLALCHEMY_DATABASE_URL:
+    connect_args = {"check_same_thread": False}
 
-DATABASE_URL = f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}/{DB_NAME}"
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, 
+    connect_args=connect_args
+)
 
-SessionLocal = sessionmaker(bind=engine)
-
-Base = declarative_base()
+SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
